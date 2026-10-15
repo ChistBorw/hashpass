@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if ! mount --bind /etc/hashpass/version /proc/version; then
+  printf '%s\n' 'Ошибка задания: не удалось подключить учебный /proc/version.'
+fi
+
+exec /usr/local/sbin/hp-console

@@ -3,6 +3,11 @@
 
 image root-tour:1
 
+copy data/version /etc/hashpass/version
+copy data/hp-root-tour-console /usr/local/sbin/hp-root-tour-console
+copy data/zz-root-tour.conf /etc/systemd/system/console-getty.service.d/zz-root-tour.conf
+run chmod 755 /usr/local/sbin/hp-root-tour-console
+
 hidden hp
 
 settings
@@ -13,15 +18,13 @@ say "Открываем карту Linux: от корня до виртуаль�
 read brief.md
 
 stage
-  say "Перейди в / и посмотри, какие каталоги начинаются от корня файловой системы"
-  solve:
-    cd /
-    ls
-  observe output
+  say "Посмотри, какие каталоги начинаются прямо от корня файловой системы"
+  solve ls /
+  accept output "(?s)\A(?=.*\bbin\b)(?=.*\bdev\b)(?=.*\betc\b)(?=.*\bhome\b)(?=.*\bproc\b)(?=.*\btmp\b)(?=.*\busr\b)(?=.*\bvar\b).*\Z"
   neutral cd
   neutral pwd
   neutral clear
-  hint tries 5 say "Сначала перейди в корень командой cd /, затем выведи его содержимое через ls."
+  hint tries 5 say "Выведи содержимое корневого каталога через ls /."
   on pass say "Косая черта — вершина всего дерева. Следующая остановка — настройки системы."
 
 stage
@@ -37,21 +40,19 @@ stage
 
 stage
   on enter read home.md
-  say "Перейди в /home и посмотри, чьи домашние каталоги там есть"
-  solve:
-    cd /home
-    ls
-  observe output
+  say "Посмотри, чьи домашние каталоги есть в /home"
+  solve ls /home
+  accept output "(?m)^student$"
   neutral cd
   neutral pwd
   neutral clear
-  hint tries 5 say "Перейди в /home командой cd, затем выведи содержимое через ls."
+  hint tries 5 say "Выведи содержимое каталога через ls /home."
   on pass say "У каждого пользователя может быть свой дом. Дальше — каталог, которого нет на диске."
 
 stage
   on enter read proc.md
   say "Узнай версию ядра из /proc/version"
-  solve cat /proc/version
+  solve cat /etc/hashpass/version
   observe output
   neutral pwd
   neutral clear
